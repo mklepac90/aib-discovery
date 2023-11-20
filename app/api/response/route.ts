@@ -1,42 +1,54 @@
-import OpenAI from 'openai'
+import OpenAI from "openai";
 
-const openai = new OpenAI()
+const openai = new OpenAI();
 
 type RequestData = {
-  currentModel: string
-  message: string
-}
+  currentModel: string;
+  message: string;
+};
 
-export const runtime = 'edge'
+export const runtime = "edge";
 
 export async function POST(request: Request) {
-  const { message } = (await request.json()) as RequestData
-
-  console.log(message)
+  const { message } = (await request.json()) as RequestData;
 
   if (!message) {
-    return new Response('No message in the request', { status: 400 })
+    return new Response("No message in the request", { status: 400 });
   }
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4',
-    messages: [{ role: 'user', content: message }],
-    max_tokens: 4096,
-    stream: true,
-  })
+  //   const completion = await openai.chat.completions.create({
+  //     model: "gpt-4",
+  //     messages: [{ role: "user", content: message }],
+  //     max_tokens: 4096,
+  //     stream: true,
+  //   });
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      const encoder = new TextEncoder()
+  let generateImage;
+  try {
+    generateImage = await openai.images.generate({
+      prompt: message,
+      n: 1,
+      size: "512x512",
+    });
+  } catch (error) {
+    console.log("error", error);
+  }
 
-      for await (const part of completion) {
-        const text = part.choices[0]?.delta.content ?? ''
-        const chunk = encoder.encode(text)
-        controller.enqueue(chunk)
-      }
-      controller.close()
-    },
-  })
+  //   const stream = new ReadableStream({
+  //     async start(controller) {
+  //       const encoder = new TextEncoder();
 
-  return new Response(stream)
+  //       for await (const part of completion) {
+  //         const text = part.choices[0]?.delta.content ?? "";
+  //         const chunk = encoder.encode(text);
+  //         controller.enqueue(chunk);
+  //       }
+  //       controller.close();
+  //     },
+  //   });
+
+  console.log("generateImage", generateImage);
+  const urlData = generateImage.data[0].url;
+
+  return new Response(urlData);
 }
