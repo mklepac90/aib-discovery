@@ -16,39 +16,25 @@ export async function POST(request: Request) {
     return new Response("No message in the request", { status: 400 });
   }
 
-  //   const completion = await openai.chat.completions.create({
-  //     model: "gpt-4",
-  //     messages: [{ role: "user", content: message }],
-  //     max_tokens: 4096,
-  //     stream: true,
-  //   });
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [{ role: "user", content: message }],
+    max_tokens: 4096,
+    stream: true,
+  });
 
-  let generateImage;
-  try {
-    generateImage = await openai.images.generate({
-      prompt: message,
-      n: 1,
-      size: "512x512",
-    });
-  } catch (error) {
-    console.log("error", error);
-  }
+  const stream = new ReadableStream({
+    async start(controller) {
+      const encoder = new TextEncoder();
 
-  //   const stream = new ReadableStream({
-  //     async start(controller) {
-  //       const encoder = new TextEncoder();
+      for await (const part of completion) {
+        const text = part.choices[0]?.delta.content ?? "";
+        const chunk = encoder.encode(text);
+        controller.enqueue(chunk);
+      }
+      controller.close();
+    },
+  });
 
-  //       for await (const part of completion) {
-  //         const text = part.choices[0]?.delta.content ?? "";
-  //         const chunk = encoder.encode(text);
-  //         controller.enqueue(chunk);
-  //       }
-  //       controller.close();
-  //     },
-  //   });
-
-  console.log("generateImage", generateImage);
-  const urlData = generateImage.data[0].url;
-
-  return new Response(urlData);
+  return new Response(stream);
 }

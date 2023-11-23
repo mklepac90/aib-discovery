@@ -135,7 +135,6 @@ const Form = ({ modelsList }: { modelsList: OpenAI.ModelsPage }) => {
                   } p-3 rounded-lg`}
                 >
                   <p>{item}</p>
-                  <img src={item} />
                 </div>
               );
             })
@@ -149,7 +148,6 @@ const Form = ({ modelsList }: { modelsList: OpenAI.ModelsPage }) => {
                   } p-3 rounded-lg`}
                 >
                   <p>{item}</p>
-                  <img src={item} />
                 </div>
               );
             })
