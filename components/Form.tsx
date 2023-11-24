@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 const Form = () => {
   const messageInput = useRef<HTMLTextAreaElement | null>(null);
@@ -113,27 +114,27 @@ const Form = () => {
           {isLoading
             ? history.map((item: any, index: number) => {
                 return (
-                  <div
+                  <ReactMarkdown
                     key={index}
                     className={`${
-                      index % 2 === 0 ? "font-medium" : "indent-8"
+                      index % 2 === 0 ? "font-medium" : "font-normal"
                     }`}
                   >
-                    <p>{item}</p>
-                  </div>
+                    {item}
+                  </ReactMarkdown>
                 );
               })
             : history
             ? history.map((item: string, index: number) => {
                 return (
-                  <div
+                  <ReactMarkdown
                     key={index}
                     className={`${
-                      index % 2 === 0 ? "font-medium" : "indent-8"
+                      index % 2 === 0 ? "font-medium" : "font-normal"
                     }`}
                   >
-                    <p>{item}</p>
-                  </div>
+                    {item}
+                  </ReactMarkdown>
                 );
               })
             : null}
