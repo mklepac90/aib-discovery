@@ -28,7 +28,7 @@ const svg = {
 };
 
 const ThemeToggle: React.FC = (): JSX.Element => {
-  const [activeTheme, setActiveTheme] = useState<string>("light");
+  const [activeTheme, setActiveTheme] = useState<string | null>(null);
 
   const setDarkTheme = () => {
     document.documentElement.classList.add("dark");
